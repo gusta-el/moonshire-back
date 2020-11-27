@@ -31,7 +31,9 @@ public class UserController {
 		ValidPasswordDTO validPass = new ValidPasswordDTO();
 				
 		if(Objects.nonNull(player)) {
-			validPass.setValidation(player.getPlayerPassword().equals(userDto.getPlayerPassword()));		
+			if(player.getPlayerPassword().equals(userDto.getPlayerPassword())) {
+				validPass.setValidation(true);
+			}	
 		} else {
 			validPass.setValidation(false);
 		}
