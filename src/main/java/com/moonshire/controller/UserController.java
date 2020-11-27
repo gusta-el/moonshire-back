@@ -1,14 +1,19 @@
 package com.moonshire.controller;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moonshire.dto.UserDTO;
+import com.moonshire.dto.ValidPasswordDTO;
 import com.moonshire.entity.Player;
 import com.moonshire.repository.PlayerRepository;
 
@@ -20,16 +25,19 @@ public class UserController {
 	
 	
 	@PostMapping(value = "/login")
-	public Boolean login(@RequestBody UserDTO userDto) {
+	public ResponseEntity<ValidPasswordDTO> login(@RequestBody UserDTO userDto) {
 		
 		Player player = repository.findByPlayerEmail(userDto.getPlayerEmail());
 		
+		ValidPasswordDTO validPass = new ValidPasswordDTO();
+				
 		if(Objects.nonNull(player)) {
-			if(player.getPlayerPassword().equals(userDto.getPlayerPassword()))
-				return true;
+			validPass.setValidation(player.getPlayerPassword().equals(userDto.getPlayerPassword()));		
+		} else {
+			validPass.setValidation(false);
 		}
 		
-		return false;
+		return ResponseEntity.ok(validPass);
 		
 	}
 	
@@ -45,6 +53,19 @@ public class UserController {
 		player = repository.save(player);
 				
 		return ResponseEntity.ok(userDto);
+		
+	}
+	
+	@GetMapping(value = "/players")
+	public ResponseEntity<List<UserDTO>> games() {
+		
+		Iterable<Player> playersIt = repository.findAll();
+		
+		List<UserDTO> players = StreamSupport.stream(playersIt.spliterator(), false)
+			.map(player -> new UserDTO(player.getPlayerName(), player.getPlayerEmail(), player.getPlayerPassword()))
+			.collect(Collectors.toList());
+		
+		return ResponseEntity.ok(players);
 		
 	}
 	
