@@ -22,19 +22,14 @@ public class GameController {
 	@GetMapping(value = "/games")
 	public ResponseEntity<List<GameDTO>> games() {
 		
-		
-		Game game = repository.findByGameName("Garras e Penas");
-		
-		List<Game> games = repository.findAll();
-		
-		
+				
 		Iterable<Game> gamesIt = repository.findAll();
-//		
-//		List<GameDTO> games = StreamSupport.stream(gamesIt.spliterator(), false)
-//			.map(game -> new GameDTO(game.getGameId(), game.getGameName(), game.getGameYear()))
-//			.collect(Collectors.toList());
 		
-		return ResponseEntity.ok(null);
+		List<GameDTO> games = StreamSupport.stream(gamesIt.spliterator(), false)
+			.map(game -> new GameDTO(game.getGameId(), game.getGameName(), game.getGameYear()))
+			.collect(Collectors.toList());
+		
+		return ResponseEntity.ok(games);
 		
 	}
 	

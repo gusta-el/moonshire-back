@@ -22,8 +22,7 @@ public class UserController {
 
 	@Autowired
 	PlayerRepository repository;
-	
-	
+		
 	@PostMapping(value = "/login")
 	public ResponseEntity<ValidPasswordDTO> login(@RequestBody UserDTO userDto) {
 		
